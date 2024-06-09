@@ -4,17 +4,24 @@
  */
 package edu.ijse.mvc.view;
 
+import edu.ijse.mvc.controller.ItemController;
+import edu.ijse.mvc.dto.ItemDto;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author anjan
  */
 public class ItemView extends javax.swing.JFrame {
 
+    private final ItemController ITEM_CONTROLLER;
+
     /**
      * Creates new form ItemView
      */
     public ItemView() {
         initComponents();
+        this.ITEM_CONTROLLER = new ItemController();
     }
 
     /**
@@ -76,6 +83,11 @@ public class ItemView extends javax.swing.JFrame {
 
         btnSave.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         btnSave.setText("Save");
+        btnSave.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSaveActionPerformed(evt);
+            }
+        });
 
         btnUpdate.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         btnUpdate.setText("Update");
@@ -177,6 +189,10 @@ public class ItemView extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
+        saveItem();
+    }//GEN-LAST:event_btnSaveActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -230,4 +246,20 @@ public class ItemView extends javax.swing.JFrame {
     private javax.swing.JTextField txtQoh;
     private javax.swing.JTextField txtUnitPrice;
     // End of variables declaration//GEN-END:variables
+
+    private void saveItem() {
+        try {
+            ItemDto itemDto = new ItemDto(txtCode.getText(),
+                    txtDesc.getText(),
+                    txtPack.getText(),
+                    Double.parseDouble(txtUnitPrice.getText()),
+                    Integer.parseInt(txtQoh.getText()));
+
+            String resp = ITEM_CONTROLLER.saveItem(itemDto);
+            JOptionPane.showMessageDialog(this, resp);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, e.getMessage());
+        }
+
+    }
 }
