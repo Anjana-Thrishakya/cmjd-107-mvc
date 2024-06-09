@@ -19,7 +19,7 @@ public class ItemView extends javax.swing.JFrame {
     /**
      * Creates new form ItemView
      */
-    public ItemView() {
+    public ItemView() throws Exception {
         initComponents();
         this.ITEM_CONTROLLER = new ItemController();
     }
@@ -257,9 +257,18 @@ public class ItemView extends javax.swing.JFrame {
 
             String resp = ITEM_CONTROLLER.saveItem(itemDto);
             JOptionPane.showMessageDialog(this, resp);
+            clearForm();
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, e.getMessage());
         }
 
     }
+    
+    public void clearForm(){
+        txtCode.setText("");
+        txtDesc.setText("");
+        txtPack.setText("");
+        txtQoh.setText("");
+        txtUnitPrice.setText("");
+   }
 }
