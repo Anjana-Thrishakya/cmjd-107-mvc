@@ -6,7 +6,9 @@ package edu.ijse.mvc.view;
 
 import edu.ijse.mvc.controller.ItemController;
 import edu.ijse.mvc.dto.ItemDto;
+import java.util.ArrayList;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -22,6 +24,7 @@ public class ItemView extends javax.swing.JFrame {
     public ItemView() throws Exception {
         initComponents();
         this.ITEM_CONTROLLER = new ItemController();
+        loadTable();
     }
 
     /**
@@ -48,7 +51,7 @@ public class ItemView extends javax.swing.JFrame {
         btnUpdate = new javax.swing.JButton();
         btnDelete = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tblItem = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -95,7 +98,7 @@ public class ItemView extends javax.swing.JFrame {
         btnDelete.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         btnDelete.setText("Delete");
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tblItem.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -106,7 +109,7 @@ public class ItemView extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(tblItem);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -233,13 +236,13 @@ public class ItemView extends javax.swing.JFrame {
     private javax.swing.JButton btnSave;
     private javax.swing.JButton btnUpdate;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
     private javax.swing.JLabel lblCode;
     private javax.swing.JLabel lblDesc;
     private javax.swing.JLabel lblHeader;
     private javax.swing.JLabel lblPack;
     private javax.swing.JLabel lblQoh;
     private javax.swing.JLabel lblUnitPrice;
+    private javax.swing.JTable tblItem;
     private javax.swing.JTextField txtCode;
     private javax.swing.JTextField txtDesc;
     private javax.swing.JTextField txtPack;
@@ -258,6 +261,7 @@ public class ItemView extends javax.swing.JFrame {
             String resp = ITEM_CONTROLLER.saveItem(itemDto);
             JOptionPane.showMessageDialog(this, resp);
             clearForm();
+            loadTable();
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, e.getMessage());
         }
@@ -271,4 +275,26 @@ public class ItemView extends javax.swing.JFrame {
         txtQoh.setText("");
         txtUnitPrice.setText("");
    }
+    
+    private void loadTable(){
+        try {
+            String [] columns = {"Code", "Description", "Pack Size", "Unit Price", "QoH"};
+            DefaultTableModel dtm = new DefaultTableModel(columns, 0){
+                @Override
+                public boolean isCellEditable(int row, int column) {
+                    return false;
+                }
+                
+            };
+            tblItem.setModel(dtm);
+            
+            ArrayList<ItemDto> itemDtos = ITEM_CONTROLLER.getAllItems();
+            for (ItemDto itemDto : itemDtos) {
+                Object[] rowData = {itemDto.getItemCode(), itemDto.getDescription(), itemDto.getPackSize(), itemDto.getUnitPrice(), itemDto.getQoh()};
+                dtm.addRow(rowData);
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, e.getMessage());
+        }
+    }
 }
