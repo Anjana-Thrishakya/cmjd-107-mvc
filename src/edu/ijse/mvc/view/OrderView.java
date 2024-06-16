@@ -5,7 +5,9 @@
 package edu.ijse.mvc.view;
 
 import edu.ijse.mvc.controller.CustomerController;
+import edu.ijse.mvc.controller.ItemController;
 import edu.ijse.mvc.dto.CustomerDto;
+import edu.ijse.mvc.dto.ItemDto;
 import javax.swing.JOptionPane;
 
 /**
@@ -15,12 +17,14 @@ import javax.swing.JOptionPane;
 public class OrderView extends javax.swing.JFrame {
     
     private CustomerController customerController;
+    private ItemController itemController;
 
     /**
      * Creates new form OrderView
      */
     public OrderView() throws Exception {
         this.customerController = new CustomerController();
+        this.itemController = new ItemController();
         initComponents();
     }
 
@@ -225,7 +229,7 @@ public class OrderView extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnItemSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnItemSearchActionPerformed
-        // TODO add your handling code here:
+        searchItem();
     }//GEN-LAST:event_btnItemSearchActionPerformed
 
     private void btnAddToTableActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddToTableActionPerformed
@@ -308,6 +312,22 @@ public class OrderView extends javax.swing.JFrame {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            JOptionPane.showMessageDialog(this, e.getMessage());
+        }
+    }
+    
+    private void searchItem(){
+        try {
+            String itemId = txtItemCode.getText();
+            ItemDto itemDto = itemController.searchItem(itemId);
+            if(itemDto != null){
+                lblItemData.setText(itemDto.getDescription() + " | " + itemDto.getPackSize() + " | " + itemDto.getQoh() + " | " + itemDto.getUnitPrice());
+            } else {
+                lblItemData.setText("Item Not Found");
+            }
+            
+        } catch (Exception e) {
+             e.printStackTrace();
             JOptionPane.showMessageDialog(this, e.getMessage());
         }
     }

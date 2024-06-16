@@ -30,4 +30,8 @@ public class ItemController {
         return itemModel.getAllItem();
     }
     
+    public ItemDto searchItem(String itemCode) throws Exception{
+        return itemModel.getItem(itemCode);
+    }
+    
 }
