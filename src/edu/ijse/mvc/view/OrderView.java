@@ -4,16 +4,23 @@
  */
 package edu.ijse.mvc.view;
 
+import edu.ijse.mvc.controller.CustomerController;
+import edu.ijse.mvc.dto.CustomerDto;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author anjan
  */
 public class OrderView extends javax.swing.JFrame {
+    
+    private CustomerController customerController;
 
     /**
      * Creates new form OrderView
      */
-    public OrderView() {
+    public OrderView() throws Exception {
+        this.customerController = new CustomerController();
         initComponents();
     }
 
@@ -60,6 +67,11 @@ public class OrderView extends javax.swing.JFrame {
 
         btnCustSearch.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         btnCustSearch.setText("Search");
+        btnCustSearch.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCustSearchActionPerformed(evt);
+            }
+        });
 
         lblCustData.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
 
@@ -224,6 +236,10 @@ public class OrderView extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_btnPlaceOrderActionPerformed
 
+    private void btnCustSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCustSearchActionPerformed
+        searchCustomer();
+    }//GEN-LAST:event_btnCustSearchActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -281,4 +297,18 @@ public class OrderView extends javax.swing.JFrame {
     private javax.swing.JTextField txtOrderId;
     private javax.swing.JTextField txtQty;
     // End of variables declaration//GEN-END:variables
+    public void searchCustomer(){
+        try {
+            String custId = txtCustId.getText();
+            CustomerDto customerDto = customerController.searchCustomer(custId);
+            if(customerDto != null){
+                lblCustData.setText(customerDto.getTitle() + " " + customerDto.getName() + " | " + customerDto.getAddress());
+            } else {
+                lblCustData.setText("Customer Not Found");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, e.getMessage());
+        }
+    }
 }
