@@ -8,7 +8,10 @@ import edu.ijse.mvc.controller.CustomerController;
 import edu.ijse.mvc.controller.ItemController;
 import edu.ijse.mvc.dto.CustomerDto;
 import edu.ijse.mvc.dto.ItemDto;
+import edu.ijse.mvc.dto.OrderDetailDto;
+import java.util.ArrayList;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -18,6 +21,7 @@ public class OrderView extends javax.swing.JFrame {
     
     private CustomerController customerController;
     private ItemController itemController;
+    private ArrayList<OrderDetailDto> orderDetailDtos = new ArrayList<>();
 
     /**
      * Creates new form OrderView
@@ -26,6 +30,7 @@ public class OrderView extends javax.swing.JFrame {
         this.customerController = new CustomerController();
         this.itemController = new ItemController();
         initComponents();
+        loadTable();
     }
 
     /**
@@ -55,7 +60,7 @@ public class OrderView extends javax.swing.JFrame {
         txtDiscount = new javax.swing.JTextField();
         btnAddToTable = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tblOrderDetail = new javax.swing.JTable();
         btnPlaceOrder = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -117,7 +122,7 @@ public class OrderView extends javax.swing.JFrame {
             }
         });
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tblOrderDetail.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -128,7 +133,7 @@ public class OrderView extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(tblOrderDetail);
 
         btnPlaceOrder.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         btnPlaceOrder.setText("Place Order");
@@ -233,7 +238,7 @@ public class OrderView extends javax.swing.JFrame {
     }//GEN-LAST:event_btnItemSearchActionPerformed
 
     private void btnAddToTableActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddToTableActionPerformed
-        // TODO add your handling code here:
+        addToTable();
     }//GEN-LAST:event_btnAddToTableActionPerformed
 
     private void btnPlaceOrderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPlaceOrderActionPerformed
@@ -286,7 +291,6 @@ public class OrderView extends javax.swing.JFrame {
     private javax.swing.JButton btnPlaceOrder;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JTable jTable1;
     private javax.swing.JLabel lblCustData;
     private javax.swing.JLabel lblCustId;
     private javax.swing.JLabel lblDiscount;
@@ -295,6 +299,7 @@ public class OrderView extends javax.swing.JFrame {
     private javax.swing.JLabel lblOrderId;
     private javax.swing.JLabel lblQty;
     private javax.swing.JLabel lblTitle;
+    private javax.swing.JTable tblOrderDetail;
     private javax.swing.JTextField txtCustId;
     private javax.swing.JTextField txtDiscount;
     private javax.swing.JTextField txtItemCode;
@@ -330,5 +335,39 @@ public class OrderView extends javax.swing.JFrame {
              e.printStackTrace();
             JOptionPane.showMessageDialog(this, e.getMessage());
         }
+    }
+    
+    private void addToTable(){
+        OrderDetailDto orderDetailDto = new OrderDetailDto();
+        orderDetailDto.setDiscount(Integer.parseInt(txtDiscount.getText()));
+        orderDetailDto.setItemCode(txtItemCode.getText());
+        orderDetailDto.setQty(Integer.parseInt(txtQty.getText()));
+        
+        orderDetailDtos.add(orderDetailDto);
+        
+        Object[] rowData = {orderDetailDto.getItemCode(), orderDetailDto.getQty(), orderDetailDto.getDiscount()};
+        DefaultTableModel dtm = (DefaultTableModel) tblOrderDetail.getModel();
+        dtm.addRow(rowData);
+        
+        clearItem();
+    }
+    
+    private void clearItem(){
+        txtItemCode.setText("");
+        txtQty.setText("");
+        txtDiscount.setText("");
+        lblItemData.setText("");
+    }
+
+    private void loadTable() {
+        String columns[] = {"Item Code", "Qty", "Discount"};
+        DefaultTableModel dtm = new DefaultTableModel(columns, 0){
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        
+        tblOrderDetail.setModel(dtm);
     }
 }
