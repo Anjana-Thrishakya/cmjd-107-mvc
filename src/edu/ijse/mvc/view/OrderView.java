@@ -6,10 +6,14 @@ package edu.ijse.mvc.view;
 
 import edu.ijse.mvc.controller.CustomerController;
 import edu.ijse.mvc.controller.ItemController;
+import edu.ijse.mvc.controller.OrderController;
 import edu.ijse.mvc.dto.CustomerDto;
 import edu.ijse.mvc.dto.ItemDto;
 import edu.ijse.mvc.dto.OrderDetailDto;
+import edu.ijse.mvc.dto.OrderDto;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -18,9 +22,10 @@ import javax.swing.table.DefaultTableModel;
  * @author anjan
  */
 public class OrderView extends javax.swing.JFrame {
-    
+
     private CustomerController customerController;
     private ItemController itemController;
+    private OrderController orderController;
     private ArrayList<OrderDetailDto> orderDetailDtos = new ArrayList<>();
 
     /**
@@ -29,6 +34,7 @@ public class OrderView extends javax.swing.JFrame {
     public OrderView() throws Exception {
         this.customerController = new CustomerController();
         this.itemController = new ItemController();
+        this.orderController = new OrderController();
         initComponents();
         loadTable();
     }
@@ -242,7 +248,7 @@ public class OrderView extends javax.swing.JFrame {
     }//GEN-LAST:event_btnAddToTableActionPerformed
 
     private void btnPlaceOrderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPlaceOrderActionPerformed
-        // TODO add your handling code here:
+        placeOrder();
     }//GEN-LAST:event_btnPlaceOrderActionPerformed
 
     private void btnCustSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCustSearchActionPerformed
@@ -306,11 +312,11 @@ public class OrderView extends javax.swing.JFrame {
     private javax.swing.JTextField txtOrderId;
     private javax.swing.JTextField txtQty;
     // End of variables declaration//GEN-END:variables
-    public void searchCustomer(){
+    public void searchCustomer() {
         try {
             String custId = txtCustId.getText();
             CustomerDto customerDto = customerController.searchCustomer(custId);
-            if(customerDto != null){
+            if (customerDto != null) {
                 lblCustData.setText(customerDto.getTitle() + " " + customerDto.getName() + " | " + customerDto.getAddress());
             } else {
                 lblCustData.setText("Customer Not Found");
@@ -320,39 +326,39 @@ public class OrderView extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, e.getMessage());
         }
     }
-    
-    private void searchItem(){
+
+    private void searchItem() {
         try {
             String itemId = txtItemCode.getText();
             ItemDto itemDto = itemController.searchItem(itemId);
-            if(itemDto != null){
+            if (itemDto != null) {
                 lblItemData.setText(itemDto.getDescription() + " | " + itemDto.getPackSize() + " | " + itemDto.getQoh() + " | " + itemDto.getUnitPrice());
             } else {
                 lblItemData.setText("Item Not Found");
             }
-            
+
         } catch (Exception e) {
-             e.printStackTrace();
+            e.printStackTrace();
             JOptionPane.showMessageDialog(this, e.getMessage());
         }
     }
-    
-    private void addToTable(){
+
+    private void addToTable() {
         OrderDetailDto orderDetailDto = new OrderDetailDto();
         orderDetailDto.setDiscount(Integer.parseInt(txtDiscount.getText()));
         orderDetailDto.setItemCode(txtItemCode.getText());
         orderDetailDto.setQty(Integer.parseInt(txtQty.getText()));
-        
+
         orderDetailDtos.add(orderDetailDto);
-        
+
         Object[] rowData = {orderDetailDto.getItemCode(), orderDetailDto.getQty(), orderDetailDto.getDiscount()};
         DefaultTableModel dtm = (DefaultTableModel) tblOrderDetail.getModel();
         dtm.addRow(rowData);
-        
+
         clearItem();
     }
-    
-    private void clearItem(){
+
+    private void clearItem() {
         txtItemCode.setText("");
         txtQty.setText("");
         txtDiscount.setText("");
@@ -361,13 +367,33 @@ public class OrderView extends javax.swing.JFrame {
 
     private void loadTable() {
         String columns[] = {"Item Code", "Qty", "Discount"};
-        DefaultTableModel dtm = new DefaultTableModel(columns, 0){
+        DefaultTableModel dtm = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
         };
-        
+
         tblOrderDetail.setModel(dtm);
+    }
+
+    private void placeOrder() {
+        try {
+            OrderDto orderDto = new OrderDto();
+            orderDto.setCustId(txtCustId.getText());
+            orderDto.setOrderId(txtOrderId.getText());
+
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            String date = sdf.format(new Date());
+            orderDto.setDate(date);
+            
+            String resp = orderController.placeOrder(orderDto, orderDetailDtos);
+            JOptionPane.showMessageDialog(this, resp);
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, e.getMessage());
+        }
+
     }
 }
